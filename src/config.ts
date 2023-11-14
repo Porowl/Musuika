@@ -16,10 +16,7 @@ export default {
         gravity: {
             y: 0.3
         },
-        debug: {
-            showBody: false,
-            showStaticBody: false
-        }
+        debug: true
     }
   }
 };
