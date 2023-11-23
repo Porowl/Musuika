@@ -5,7 +5,7 @@ export default {
   parent: 'game',
   scale: {
     width: 800,
-    height: 600,
+    height: 1080,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
@@ -14,7 +14,7 @@ export default {
     matter: {
         enableSleeping: true,
         gravity: {
-            y: 0.3
+            y: 0.9
         },
         debug: true
     }
