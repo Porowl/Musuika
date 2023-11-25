@@ -1,4 +1,6 @@
 import Phaser, { GameObjects } from 'phaser';
+import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+const socket = io.connect(':3010');
 // import { Socket } from 'socket.io';
 
 const CENTER_Y = 200;
@@ -6,7 +8,7 @@ const CENTER_X = 400;
 const WORLD_WIDTH = 500;
 const WORLD_HEIGHT = 980 
 
-export default class Demo extends Phaser.Scene {
+export default class Demo extends Phaser.Scene {  
   LastTime: number = 0;
   targetX: number = -1;
   mouseInput: boolean = false;
