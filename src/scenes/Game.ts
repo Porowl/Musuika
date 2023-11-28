@@ -1,6 +1,6 @@
 import Phaser, { GameObjects } from 'phaser';
 import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
-const socket = io.connect(':3010');
+const socket = io.connect();
 
 const CENTER_Y = 150;
 const CENTER_X = 400;
