@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "start": "node server/server.ts"
+    "start": "node server/server.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,8 @@
     "vite": "^2.9.13"
   },
   "dependencies": {
-    "socket.io": "^4.7.2"
-  }
+    "socket.io": "^4.7.2",
+    "ts-node": "^10.9.1"
+  },
+  "type":"module"
 }
