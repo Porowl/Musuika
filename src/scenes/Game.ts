@@ -180,6 +180,8 @@ export default class Demo extends Phaser.Scene {
         const mod = newScale%SCORES.length;
         const mul = ~~(newScale/SCORES.length)+1; 
 
+        socket.emit("merge",{x:midX,y:midY,s:newScale});
+        
         this.addScore(SCORES[mod]*mul);
 
         bodyA.destroy();
