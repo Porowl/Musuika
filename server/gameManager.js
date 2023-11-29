@@ -18,14 +18,15 @@ class Game{
         this.gameId = id
         this.emptyList();
     }
-    
+    getId = () => {
+        return this.gameId;
+    }
     emptyList = () =>{
         this.List = [];
     }
 
-    getList = (id) =>{
-        const dest_socket = io.sockets.sockets.get(id)
-        dest_socket.emit("reqList");
+    getList = () =>{
+        return this.List;
     }
 
     addList = (data) => {
@@ -48,5 +49,14 @@ export default class GameManager{
         if(!Game) return;
         Game.emptyList();
         Game.addList(data);
+    }
+
+    getData = () => {
+        let data = {}
+        for(const key in this.GameList){
+            const game = this.GameList[key];
+            data[game.getId()] = game.getList();
+        }
+        return data;
     }
 }

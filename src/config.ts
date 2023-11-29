@@ -16,7 +16,7 @@ export default {
         gravity: {
             y: 0.9
         },
-        debug: true
+        debug: false
     }
   }
 };

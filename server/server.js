@@ -30,6 +30,7 @@ let gMng            = new GameManager();
 let maxArr          = [];
 
 app.use(express.static(publicPath));
+app.use(express.static(__dirname+'../'));
 
 server.listen(port, ()=> {
     console.log(`Server is up on port ${port}.`)
@@ -37,6 +38,10 @@ server.listen(port, ()=> {
 
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, '../dist/index.html'));
+});
+
+app.get('/viewer', (req, res) => {
+    res.sendFile(join(__dirname, '../viewer.html'));
 });
 
 io.on("connection", (socket) => {
@@ -48,9 +53,10 @@ io.on("connection", (socket) => {
         gMng.removeGame(socket.id);
     });
 
-    socket.on("IAmMax",()=>{
-        console.log(socket.id,"declared it is max. Adding max to the list")
-        socket.join("max");
+    socket.on("viewer",()=>{
+        console.log(socket.id,"declared it is viewer. Adding viewer to the list")
+        socket.join("viewer");
+        gMng.removeGame(socket.id);
     });
 
     socket.on("dataSent",data=>{
@@ -89,9 +95,11 @@ wss.on("connection",(ws,request)=>{
     });
 });
 
-const dataCycle = () => {
-    // console.log("data requested");
-    // io.sockets.emit("reqList");
+const dataCycle = async () => {
+    io.sockets.emit("reqList");
+    let data = gMng.getData();
+    // console.log(data, JSON.stringify(data))
+    io.to("viewer").emit("viewerData",data);
 }
 
-setInterval(dataCycle,1000);
+setInterval(dataCycle,100);

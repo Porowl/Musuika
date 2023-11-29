@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Musuika</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js" integrity="sha512-4ZfEVGDoKT//8YicIXrm8r/GyfPWIDyPT06i3FfPqjRc0vKZld/q6dBQQqO1Uogst58ytaBTI7lY2eU1+jniKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+  </body>
+  <script>
+    const app = new PIXI.Application({
+        background: '#1099bb',
+        resizeTo: window,
+    });
+
+    const balls = {};
+    let textures;
+    for(let i = 1; i<12;i++){
+      balls[`ball${i}`] = `../assets/ball${i}.png`;
+    }
+    const init = async () => {
+      PIXI.Assets.addBundle('balls',balls)
+      textures = await PIXI.Assets.loadBundle('balls');
+    }
+    init();
+
+    const containers = [];
+
+    socket = io();
+    socket.on('connect',()=>{
+      socket.emit("viewer");
+    })
+    socket.on('viewerData',(data)=>{
+      for(const key in data){
+        let cont = containers[key]
+        if(!cont){ 
+          containers[key] = cont = new PIXI.Container();
+          app.stage.addChild(cont);
+        } 
+        let arr = data[key]
+        let i = 0;
+        for(; i<arr.length;i++){
+          let x = arr[i]['x'];
+          let y = arr[i]['y'];
+          let s = arr[i]['s'];
+
+          let spr = null;
+          if(i<cont.children.length){
+            spr = cont.getChildAt(i);
+            spr.texture = textures[`ball${s}`];
+          } else {
+            spr = PIXI.Sprite.from(textures[`ball${s}`]);
+            spr.anchor.set(0.5);
+            cont.addChild(spr)
+          }
+          spr.setTransform(x,y,0.04*s,0.04*s);
+        }
+        for(;i<cont.children.length;i++){
+          cont.getChildAt(i).setTransform(-9999.-9999)
+        }
+      }
+      const num = Object.keys(containers).length;
+      
+      const rows = Math.ceil(Math.sqrt(num));
+
+      let i = 0;
+      for(const key in containers){
+        let cont = containers[key]
+        
+        let x = i%rows;
+        let y = ~~(i/rows);
+
+        const targetx = app.screen.width*(x/rows);
+        const targety = app.screen.height*(y/rows);
+        cont.setTransform(targetx,targety,1/num,1/num,0,0,0,0.5,0.5);
+        i++
+      }
+    });
+
+    document.body.appendChild(app.view);
+
+
+
+
+  </script>
+</html>
