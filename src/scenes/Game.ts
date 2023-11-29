@@ -122,7 +122,7 @@ export default class Demo extends Phaser.Scene {
       })
       // console.log(data);
       socket.emit("dataSent",data);
-      // console.log("dataSent");
+      console.log("dataSent");
     });
 
     //Data
@@ -181,6 +181,7 @@ export default class Demo extends Phaser.Scene {
         const mul = ~~(newScale/SCORES.length)+1; 
 
         socket.emit("merge",{x:midX,y:midY,s:newScale});
+        console.log('merge event sent.');
         
         this.addScore(SCORES[mod]*mul);
 

@@ -4,7 +4,6 @@ import http from 'http';
 import express from 'express';
 import {Server} from 'socket.io';
 import { fileURLToPath } from 'url';
-import Websocket, {WebSocketServer} from 'ws';
 
 //Custom Imports
 import GameManager from './gameManager.js';
@@ -17,17 +16,18 @@ const publicPath    = join(__dirname, '/../dist');
 const port          = process.env.PORT || 3010;
 let app             = express();
 let server          = http.createServer(app);
-let wss             = new WebSocketServer({server:server});
 const io            = new Server({
     allowEIO3: true,
-    cors: {origin: true}
+    cors: {
+        origin: true,
+        methods: ["GET","POST"]
+    },
 });
 io.attach(server);
 export default io;
 
 //Gamemanager Instance 
 let gMng            = new GameManager();
-let maxArr          = [];
 
 app.use(express.static(publicPath));
 
@@ -59,39 +59,13 @@ io.on("connection", (socket) => {
     });
 
     socket.on("merge",data=>{
-        // console.log(socket.id,"merged",data);
-        maxArr.forEach(ws=>{
-            ws.send(JSON.stringify(data));
-        });
-    });
-});
-
-wss.on("connection",(ws,request)=>{
-    const ip = request.socket.remoteAddress;
-    
-    console.log(`Max Client [${ip}]: connected`);
-
-    if (ws.readyState === ws.OPEN) {
-        console.log(`Max Client [${ip}]: connection established sucessfully`);
-        maxArr.push(ws);
-    }
-
-    ws.on("message", (msg) => {
-        console.log(`Max Client [${ip}]: ${msg}`);
-    });
-
-    ws.on("error", (error) => {
-        console.log(`[ERROR]: ${error} [${ip}]`);
-    });
-
-    ws.on("close", () => {
-        console.log(`Max Client [${ip}]: Disconnected`);
+       io.to("max").emit("merge",data); 
     });
 });
 
 const dataCycle = () => {
     // console.log("data requested");
-    // io.sockets.emit("reqList");
+    io.sockets.emit("reqList");
 }
 
 setInterval(dataCycle,1000);
