@@ -67,7 +67,6 @@ io.on("connection", (socket) => {
     socket.on("merge",data=>{
         // console.log(socket.id,"merged",data);
         maxArr.forEach(ws=>{
-            console.log(data);
             ws.send(JSON.stringify(data));
         });
     });

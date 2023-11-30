@@ -77,7 +77,7 @@ export default class Demo extends Phaser.Scene {
     // graphics.strokeLineShape(line);
     // const rt = this.add.renderTexture(150,0,WORLD_WIDTH,WORLD_HEIGHT).setOrigin(0,0);
     // rt.draw('background');
-    this.add.image(WORLD_WIDTH/2,0+WORLD_HEIGHT/2,'background').setTint('0x787878');
+    this.add.image(WORLD_WIDTH/2,0+WORLD_HEIGHT/2,'background')//.setTint('0x787878');
 
 
     //Always keep physics active
