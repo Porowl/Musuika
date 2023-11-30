@@ -67,6 +67,7 @@ io.on("connection", (socket) => {
     socket.on("merge",data=>{
         // console.log(socket.id,"merged",data);
         maxArr.forEach(ws=>{
+            console.log(data);
             ws.send(JSON.stringify(data));
         });
     });
@@ -92,6 +93,8 @@ wss.on("connection",(ws,request)=>{
 
     ws.on("close", () => {
         console.log(`Max Client [${ip}]: Disconnected`);
+        const i = maxArr.indexOf(ws);
+        maxArr.splice(i,1);
     });
 });
 

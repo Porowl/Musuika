@@ -3,9 +3,9 @@ import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 const socket = io.connect();
 
 const CENTER_Y = 150;
-const CENTER_X = 400;
+const CENTER_X = 250;
 const WORLD_WIDTH = 500;
-const WORLD_HEIGHT = 980 
+const WORLD_HEIGHT = 1000 
 
 export default class Demo extends Phaser.Scene {  
   score: number = 0;
@@ -24,6 +24,7 @@ export default class Demo extends Phaser.Scene {
     for(let i = 1; i<12;i++){
       this.load.image(`ball${i}`, `assets/ball${i}.png`);
     }
+    this.load.image(`background`, `assets/background.png`);
   }
 
   update(time:number, delta:number){
@@ -33,9 +34,10 @@ export default class Demo extends Phaser.Scene {
     ])
 
     if(time/1000 > this.LastTime){
-      const bodies = this.matter.intersectRay(151,CENTER_Y+50,649,CENTER_Y+50);  
+      const bodies = this.matter.intersectRay(1,CENTER_Y+50,499,CENTER_Y+50);  
       if(bodies.length>1){
         this.scene.restart();
+        this.score = 0;
       }
       this.LastTime += 1;
     }
@@ -66,14 +68,17 @@ export default class Demo extends Phaser.Scene {
 
   create() {
     //Replace this with matter container for future purpose
-    this.matter.world.setBounds(150,0,WORLD_WIDTH,WORLD_HEIGHT);
-    this.currentBall = this.CreateNewBall();
+    this.matter.world.setBounds(0,0,WORLD_WIDTH,WORLD_HEIGHT);
 
-    //Game Over Condition Visualizer
-    const line = new Phaser.Geom.Line(151,CENTER_Y+50,650,CENTER_Y+50);
-    const graphics = this.add.graphics({lineStyle: {width:1, color: 0xffffff}});
+    // World Drawer //Game Over Condition Visualizer
+    // const line = new Phaser.Geom.Line(151,CENTER_Y+50,650,CENTER_Y+50);
+    // const graphics = this.add.graphics({lineStyle: {width:1, color: 0xffffff}});
 
-    graphics.strokeLineShape(line);
+    // graphics.strokeLineShape(line);
+    // const rt = this.add.renderTexture(150,0,WORLD_WIDTH,WORLD_HEIGHT).setOrigin(0,0);
+    // rt.draw('background');
+    this.add.image(WORLD_WIDTH/2,0+WORLD_HEIGHT/2,'background').setTint('0x787878');
+
 
     //Always keep physics active
     this.matter.world.on('sleepstart', (event: any, body: any)=>{
@@ -100,13 +105,12 @@ export default class Demo extends Phaser.Scene {
 
     //Server Controls
     type Point = {
-      x:number,
-      y:number,
+      x:number
+      y:number
       s:number
     };
 
     socket.on("reqList",()=>{
-      
       let data: Point[] = [];
       const children = this.matter.world.getAllBodies();
       let i = 0;
@@ -126,8 +130,10 @@ export default class Demo extends Phaser.Scene {
     });
 
     //Data
-    const text = this.add.text(350, 250, '', { font: '16px Courier', color: '#00ff00' });
+    const text = this.add.text(350, 50, '', { font: '16px Courier', color: '#000000' });
     this.scoreText = text;
+
+    this.currentBall = this.CreateNewBall();
   }
   
   CreateNewBall(x = CENTER_X, y = CENTER_Y, s = 0): Phaser.Physics.Matter.Image{
@@ -180,11 +186,11 @@ export default class Demo extends Phaser.Scene {
         const mod = newScale%SCORES.length;
         const mul = ~~(newScale/SCORES.length)+1; 
 
-        socket.emit("merge",{x:midX,y:midY,s:newScale});
-        console.log('merge event sent.');
-        
         this.addScore(SCORES[mod]*mul);
 
+        socket.emit("merge",{x:midX,y:midY,s:newScale,score:this.score});
+        console.log('merge event sent.');
+        
         bodyA.destroy();
         bodyB.destroy();
       }
@@ -195,7 +201,7 @@ export default class Demo extends Phaser.Scene {
     return newball;
   }
 
-  setTargetX(x=150){
+  setTargetX(x=-1){
     this.targetX = x;
   }
 

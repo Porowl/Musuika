@@ -4,8 +4,8 @@ export default {
   type: Phaser.AUTO,
   parent: 'game',
   scale: {
-    width: 800,
-    height: 1080,
+    width: 500,
+    height: 1000,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
