@@ -15,18 +15,20 @@
   </body>
   <script>
     const app = new PIXI.Application({
-        background: '#1099bb',
+        background: '#000000',
         resizeTo: window,
     });
 
     const balls = {};
     let textures;
+    let bg;
     for(let i = 1; i<12;i++){
       balls[`ball${i}`] = `../assets/ball${i}.png`;
     }
     const init = async () => {
       PIXI.Assets.addBundle('balls',balls)
       textures = await PIXI.Assets.loadBundle('balls');
+      bg = await PIXI.Assets.load('../assets/background.png');
     }
     init();
 
@@ -41,6 +43,8 @@
         let cont = containers[key]
         if(!cont){ 
           containers[key] = cont = new PIXI.Container();
+          let bgsprite = PIXI.Sprite.from(bg); 
+          cont.addChild(bgsprite)
           app.stage.addChild(cont);
         } 
         let arr = data[key]
@@ -51,8 +55,8 @@
           let s = arr[i]['s'];
 
           let spr = null;
-          if(i<cont.children.length){
-            spr = cont.getChildAt(i);
+          if(i+1<cont.children.length){
+            spr = cont.getChildAt(i+1);
             spr.texture = textures[`ball${s}`];
           } else {
             spr = PIXI.Sprite.from(textures[`ball${s}`]);
@@ -61,24 +65,25 @@
           }
           spr.setTransform(x,y,0.04*s,0.04*s);
         }
-        for(;i<cont.children.length;i++){
-          cont.getChildAt(i).setTransform(-9999.-9999)
+        for(;i+1<cont.children.length;i++){
+          cont.getChildAt(i+1).setTransform(-9999.-9999)
         }
       }
       const num = Object.keys(containers).length;
       
-      const rows = Math.ceil(Math.sqrt(num));
+      const rows = Math.ceil(Math.sqrt(num*2/3));
 
       let i = 0;
       for(const key in containers){
         let cont = containers[key]
         
-        let x = i%rows;
-        let y = ~~(i/rows);
+        let x = i%(rows*2);
+        let y = ~~(i/(rows*2));
 
-        const targetx = app.screen.width*(x/rows);
+        const targetx = app.screen.width*(x/rows/2);
         const targety = app.screen.height*(y/rows);
-        cont.setTransform(targetx,targety,1/num,1/num,0,0,0,0.5,0.5);
+        console.log(i,targetx,targety);
+        cont.setTransform(targetx,targety,1/(rows),1/(rows),0,0,0,0.5,0.5);
         i++
       }
     });
